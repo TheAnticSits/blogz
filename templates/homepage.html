@@ -13,7 +13,7 @@
     <ul>
         {% for blog in blogs %}
 
-            <h1><a href="/pull_blog">{{blog.title}}</a></h1>
+            <h1><a href="/pull_blog?id={{blog.id}}">{{blog.title}}</a></h1>
             <h4>{{blog.body}}</h4>
         {% endfor %}
         <hr />

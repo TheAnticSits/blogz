@@ -53,8 +53,8 @@ def blog():
 
 @app.route('/pull_blog', methods=['POST', 'GET'])
 def pull_blog():
-
-    blog = Blog.query.filter_by(id=1).first()
+    id = request.args.get('id')
+    blog = Blog.query.filter_by(id=id).first()
     
     return render_template('blog.html', title= blog.title, blog = blog.body)
 
