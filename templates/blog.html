@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="/blog" method="post">
+<style>
+    h3 {
+        text-align: left;
+        color: blue;
+    }
+    h1 {
+        text-align:center;
+        color: black;
+    }
+    h2 {
+        text-align: center;
+        color: blue;
+    }
+    h4 {
+        text-align: left;
+        color: black;
+    }
+</style>
+
+<h2> Blog Title:</h2>
+<h1> {{title}}</h1>
+
+<hr />
+
+<h3>Blog:</h3>
+<h4>{{blog}}</h4>
+</form>
+
+{% endblock %}
