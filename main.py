@@ -32,22 +32,25 @@ def newpost():
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog():
-    title = request.form['title']
-    blog = request.form['blog']
-    title_error = ''
-    blog_error = ''
-    if title == '':
-        title_error = "You can't make a blog without a cool title."
-    if blog == '':
-        blog_error = "You forgot to enter a blog!"
-    body = request.form['blog']
-    new_blog = Blog(title, body)
-    db.session.add(new_blog)
-    db.session.commit()
+    if request.method == "POST":
+        title = request.form['title']
+        blog = request.form['blog']
+        title_error = ''
+        blog_error = ''
+        if title == '':
+            title_error = "You can't make a blog without a cool title."
+        if blog == '':
+            blog_error = "You forgot to enter a blog!"
+        body = request.form['blog']
+        new_blog = Blog(title, body)
+        db.session.add(new_blog)
+        db.session.commit()
 
     
     if title_error == '' and blog_error == '':
-        return render_template('blog.html', title=title, blog=blog)
+        id = new_blog.id
+
+        return redirect ('/pull_blog?id='+str(id))
     else:
         return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
 
