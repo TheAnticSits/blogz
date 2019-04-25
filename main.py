@@ -1,5 +1,7 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy
+import cgi
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -9,28 +11,30 @@ db = SQLAlchemy(app)
 app.secret_key = 'y337kGcys&zP3B'
 
 class User(db.Model):
-
+    
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref='owner')
+    blogs = db.relationship('Blog', backref='user')
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        
+        
 
 class Blog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(1000))
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 
-    def __init__(self, title, body, owner_id):
+    def __init__(self, title, body):
         self.title = title
         self.body = body
-        self.owner = owner
+        self.user = user
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -71,11 +75,11 @@ def blog():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        
+        username = request.form['user']
         password = request.form['password']
-        user = User.query.filter_by(id=id).first()
+        user = User.query.filter_by(username=username).first()
         if user and user.password == password:
-            session['user'] = user
+            session['user'] = user.username
             flash("Logged in")
             return redirect('/')
         else:
@@ -97,7 +101,20 @@ def signup():
         password = request.form['password']
         verify = request.form['verify']
 
-        # TODO - validate user's data
+        #VERIFY PASSWORD
+        passerror = ""
+        matcherror = ""
+    
+        if password != verify:
+            matcherror = "Your passwords did not match."
+     
+        if (len(original) > 20) or (len(original) <3):
+            passerror = "Please enter a Password between 3 to 20 characters."
+
+        for char in original:
+            if char == " ":
+                passerror = "Password cannot contain spaces."        
+        #VERIFY USERNAME
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:
@@ -107,8 +124,11 @@ def signup():
             session['user'] = username
             return redirect('/')
         else:
-            # TODO - user better response messaging
             return "<h1> Duplicate user</h1>"
+    
+# user tries to log in with log in that doesn't exist and is redirected to /login
+# user logs in with correct credentials stored in a database and is redirected to create a new blog
+# #user logs in with correct username but incorrect password and is advised that password was incorrect
 
     return render_template('signup.html')
 
