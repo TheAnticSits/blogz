@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Log in to Start Adding Blogz!</h1>
+<p>If you don't have an account, you may <a href="/signup">Sign Up</a> for one</p>
+<form action="/login" method="post">
+    <table>
+        <tr>
+            <td><label for="user">Username</label></td>
+            <td>
+                <input name="user" type="text" value="{{ user }}">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="password">Password</label></td>
+            <td>
+                <input name="password" type="password">
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Login">
+</form>
+
+# user tries to log in with log in that doesn't exist and is redirected to /login
+# user logs in with correct credentials stored in a database and is redirected to create a new blog
+# #user logs in with correct username but incorrect password and is advised that password was incorrect
+
+
+{% endblock %}
