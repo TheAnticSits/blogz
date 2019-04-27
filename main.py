@@ -44,12 +44,24 @@ def require_login():
         return redirect('/login')
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
     
 
     return render_template('homepage.html', blogs = blogs)
+
+@app.route('/userblogs', methods=['POST', 'GET'])
+def useblogs():
+    id = request.args.get('id')
+    blogs = Blog.query.filter_by(user_id = id).all()
+    return render_template('user_specific_blogs.html', blogs = blogs)
+
+@app.route('/', methods=['POST', 'GET'])
+def userlist():
+    users = User.query.order_by(User.id).all()
+
+    return render_template('listofusers.html', users = users)
 
 @app.route('/newpost',methods=['POST', 'GET'])
 def newpost():
@@ -63,7 +75,7 @@ def blog():
         blog = request.form['blog']
         #username = session['user']
         
-        user = User.query.filter_by(username = session['user']).first()
+        user = User.query.filter_by(id = session['user']).first()
         #item = db.session.query(Parts.id).filter(name=form.name.data).one()
         
         user_id = user.id
