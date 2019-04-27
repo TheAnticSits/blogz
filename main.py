@@ -15,7 +15,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref='user')
+    blogs = db.relationship('Blog', backref='user', lazy = True)
 
     def __init__(self, username, password):
         self.username = username
@@ -28,7 +28,7 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(1000))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     
 
     def __init__(self, title, body, user_id):
@@ -36,9 +36,18 @@ class Blog(db.Model):
         self.body = body
         self.user_id = user_id
 
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup']
+    if request.endpoint not in allowed_routes and 'user' not in session:
+        return redirect('/login')
+
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
+    
 
     return render_template('homepage.html', blogs = blogs)
 
@@ -52,9 +61,13 @@ def blog():
     if request.method == "POST":
         title = request.form['title']
         blog = request.form['blog']
-        username = session['user']
+        #username = session['user']
         
-        id = User.query.filter_by(id = session['user']).first()
+        user = User.query.filter_by(username = session['user']).first()
+        #item = db.session.query(Parts.id).filter(name=form.name.data).one()
+        
+        user_id = user.id
+
         title_error = ''
         blog_error = ''
         if title == '':
@@ -62,17 +75,17 @@ def blog():
         if blog == '':
             blog_error = "You forgot to enter a blog!"
         body = request.form['blog']
-        new_blog = Blog(title, body, id)
+        new_blog = Blog(title, body, user_id)
         db.session.add(new_blog)
         db.session.commit()
 
     
     if title_error == '' and blog_error == '':
-        #id = new_blog.id
-        return 'hello'
-        #return redirect ('/pull_blog?id='+str(id))
-    #else:
-        #return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
+        id = new_blog.id
+
+        return redirect ('/pull_blog?id='+str(id))
+    else:
+        return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -81,7 +94,7 @@ def login():
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
         if user and user.password == password:
-            session['user'] = user.username
+            session['user'] = user.id
             flash("Logged in")
             return redirect('/')
         else:
@@ -137,6 +150,10 @@ def signup():
 
     return render_template('signup.html')
 
+@app.route('/logout')
+def logout():
+    del session['user']
+    return redirect('/')
 
 
 if __name__ == '__main__':
