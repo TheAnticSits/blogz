@@ -31,10 +31,10 @@ class Blog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 
-    def __init__(self, title, body):
+    def __init__(self, title, body, user_id):
         self.title = title
         self.body = body
-        self.user = user
+        self.user_id = user_id
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -52,7 +52,9 @@ def blog():
     if request.method == "POST":
         title = request.form['title']
         blog = request.form['blog']
-        user = request.form['user']
+        username = session['user']
+        
+        id = User.query.filter_by(id = session['user']).first()
         title_error = ''
         blog_error = ''
         if title == '':
@@ -60,17 +62,17 @@ def blog():
         if blog == '':
             blog_error = "You forgot to enter a blog!"
         body = request.form['blog']
-        new_blog = Blog(title, body)
+        new_blog = Blog(title, body, id)
         db.session.add(new_blog)
         db.session.commit()
 
     
     if title_error == '' and blog_error == '':
-        id = new_blog.id
-
-        return redirect ('/pull_blog?id='+str(id))
-    else:
-        return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
+        #id = new_blog.id
+        return 'hello'
+        #return redirect ('/pull_blog?id='+str(id))
+    #else:
+        #return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -108,13 +110,16 @@ def signup():
         if password != verify:
             matcherror = "Your passwords did not match."
      
-        if (len(original) > 20) or (len(original) <3):
+        if (len(password) > 20) or (len(password) <3):
             passerror = "Please enter a Password between 3 to 20 characters."
 
-        for char in original:
+        for char in password:
             if char == " ":
                 passerror = "Password cannot contain spaces."        
         #VERIFY USERNAME
+        if passerror != "" or matcherror != "":
+            return render_template("signup.html", passerror = passerror, matcherror = matcherror)
+
 
         existing_user = User.query.filter_by(username=username).first()
         if not existing_user:
