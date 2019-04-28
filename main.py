@@ -47,7 +47,7 @@ class Blog(db.Model):
 @app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
-    user = User.query.order_by(User.username).all()
+    user = User.query.order_by(User.username).first()
     
     #user = User.query.order_by(User.id).first()
     return render_template('homepage.html', blogs = blogs, user = user)
@@ -160,15 +160,13 @@ def signup():
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
-            session['user'] = username
+
+            flash('You are a member now!  Sign in to start BLOGGING', 'alert')
             return redirect('/login')
         else:
             flash('You are already set up as a user', 'error')
             return redirect('/login')
     
-# user tries to log in with log in that doesn't exist and is redirected to /login
-# user logs in with correct credentials stored in a database and is redirected to create a new blog
-# #user logs in with correct username but incorrect password and is advised that password was incorrect
 
     return render_template('signup.html')
 
