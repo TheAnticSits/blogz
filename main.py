@@ -47,10 +47,10 @@ class Blog(db.Model):
 @app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
-    user = User.query.order_by(User.username).first()
+    users = User.query.order_by(User.username).all()
     
     #user = User.query.order_by(User.id).first()
-    return render_template('homepage.html', blogs = blogs, user = user)
+    return render_template('homepage.html', blogs = blogs, users = users)
 
 @app.route('/userblogs', methods=['POST', 'GET'])
 def useblogs():
@@ -58,7 +58,7 @@ def useblogs():
     user = User.query.filter_by(id = id).first()
     #user = user.username
     blogs = Blog.query.filter_by(user_id = id).all()
-    return render_template('user_specific_blogs.html', blogs = blogs, user = user)
+    return render_template('user_specific_blogs.html', blogs = blogs, user = user, id = id)
 
 @app.route('/', methods=['POST', 'GET'])
 def userlist():
