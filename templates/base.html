@@ -3,7 +3,9 @@
     <head>
         <title>Blogz</title>
         <style>
-        
+        title {
+            background-color:blueviolet;
+        }
         .error {
             color: red;
         }
@@ -33,6 +35,12 @@
     <div>
         <a href='/'>Main Blog Page</a>  |  <a href='/newpost'>Add A New Blog</a>  |  <a href='/login'>LogIn</a>  |  <a href='/signup'>Sign Up</a>  |  <a href='/justblogs'>list o' blogs</a>  |  <a href='/logout'>Log Off</a>
         <h1>BLOGZ!</h1>
+
+    </div>
+    <div>
+        {% if user in session %}
+            <h1> {{User.username}} is logged in</h1>
+        {% endif %}
     </div>
     <hr />
 

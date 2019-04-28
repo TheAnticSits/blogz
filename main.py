@@ -54,8 +54,10 @@ def index():
 @app.route('/userblogs', methods=['POST', 'GET'])
 def useblogs():
     id = request.args.get('id')
+    user = User.query.filter_by(id = id).first()
+    user = user.username
     blogs = Blog.query.filter_by(user_id = id).all()
-    return render_template('user_specific_blogs.html', blogs = blogs)
+    return render_template('user_specific_blogs.html', blogs = blogs, user = user)
 
 @app.route('/', methods=['POST', 'GET'])
 def userlist():
@@ -87,14 +89,15 @@ def blog():
         if blog == '':
             blog_error = "You forgot to enter a blog!"
         body = request.form['blog']
-        new_blog = Blog(title, body, user_id)
-        db.session.add(new_blog)
-        db.session.commit()
+        
 
     
     if title_error == '' and blog_error == '':
+        
+        new_blog = Blog(title, body, user_id)
+        db.session.add(new_blog)
+        db.session.commit()
         id = new_blog.id
-
         return redirect ('/pull_blog?id='+str(id))
     else:
         return render_template('newpost.html', title_error = title_error, blog_error = blog_error, title_return = title, blog_return = blog)
@@ -152,7 +155,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             session['user'] = username
-            return redirect('/')
+            return redirect('/login')
         else:
             return "<h1> Duplicate user</h1>"
     
