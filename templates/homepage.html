@@ -15,6 +15,7 @@
 
             <h1><a href="/pull_blog?id={{blog.id}}">{{blog.title}}</a></h1>
             <h4>{{blog.body}}</h4>
+            Written by <a href = '/userblogs?id={{user.id}}'>{{user.username}}</a>
             <p></p>
         {% endfor %}
         <hr />

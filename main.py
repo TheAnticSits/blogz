@@ -47,9 +47,9 @@ def require_login():
 @app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
-    
+    user = User.query.order_by(User.username).first()
 
-    return render_template('homepage.html', blogs = blogs)
+    return render_template('homepage.html', blogs = blogs, user = user)
 
 @app.route('/userblogs', methods=['POST', 'GET'])
 def useblogs():
@@ -120,9 +120,10 @@ def login():
 @app.route('/pull_blog', methods=['POST', 'GET'])
 def pull_blog():
     id = request.args.get('id')
-    blog = Blog.query.filter_by(id=id).first()
     
-    return render_template('blog.html', title= blog.title, blog = blog.body)
+    blog = Blog.query.filter_by(id=id).first()
+    user = User.query.filter_by(id = id).first()
+    return render_template('blog.html', title= blog.title, blog = blog.body, id = id, user = user)
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
