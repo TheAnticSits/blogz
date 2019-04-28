@@ -37,25 +37,26 @@ class Blog(db.Model):
         self.user_id = user_id
 
 
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'signup']
-    if request.endpoint not in allowed_routes and 'user' not in session:
-        return redirect('/login')
+#@app.before_request
+#def require_login():
+#    allowed_routes = ['login', 'signup', 'user_specifit_blogs', 'homepage', 'listofusers']
+#    if request.endpoint not in allowed_routes and 'user' not in session:
+#        return redirect('/login')
 
 
 @app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
-    user = User.query.order_by(User.username).first()
-
+    user = User.query.order_by(User.username).all()
+    
+    #user = User.query.order_by(User.id).first()
     return render_template('homepage.html', blogs = blogs, user = user)
 
 @app.route('/userblogs', methods=['POST', 'GET'])
 def useblogs():
     id = request.args.get('id')
     user = User.query.filter_by(id = id).first()
-    user = user.username
+    #user = user.username
     blogs = Blog.query.filter_by(user_id = id).all()
     return render_template('user_specific_blogs.html', blogs = blogs, user = user)
 
@@ -72,14 +73,18 @@ def newpost():
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog():
+    if 'user' not in session:
+        flash('You must LOG in to BLOG in.', 'error')
+        return redirect ('/login')
+
     if request.method == "POST":
         title = request.form['title']
         blog = request.form['blog']
         #username = session['user']
-        
+            
         user = User.query.filter_by(id = session['user']).first()
         #item = db.session.query(Parts.id).filter(name=form.name.data).one()
-        
+            
         user_id = user.id
 
         title_error = ''
@@ -89,11 +94,11 @@ def blog():
         if blog == '':
             blog_error = "You forgot to enter a blog!"
         body = request.form['blog']
-        
+            
 
-    
-    if title_error == '' and blog_error == '':
         
+    if title_error == '' and blog_error == '':
+           
         new_blog = Blog(title, body, user_id)
         db.session.add(new_blog)
         db.session.commit()
@@ -111,7 +116,7 @@ def login():
         if user and user.password == password:
             session['user'] = user.id
             flash("Logged in")
-            return redirect('/')
+            return redirect('/newpost')
         else:
             flash('User Password Incorrect OR User Does Not EXIST', 'error')
 
@@ -158,7 +163,8 @@ def signup():
             session['user'] = username
             return redirect('/login')
         else:
-            return "<h1> Duplicate user</h1>"
+            flash('You are already set up as a user', 'error')
+            return redirect('/login')
     
 # user tries to log in with log in that doesn't exist and is redirected to /login
 # user logs in with correct credentials stored in a database and is redirected to create a new blog
@@ -168,9 +174,11 @@ def signup():
 
 @app.route('/logout')
 def logout():
-    del session['user']
-    return redirect('/')
-
+    try:
+        del session['user']
+        return redirect('/')
+    finally:
+        return redirect('/')
 
 if __name__ == '__main__':
     app.run()

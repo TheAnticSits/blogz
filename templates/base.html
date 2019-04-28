@@ -33,7 +33,11 @@
 {% endwith %}
 <body>
     <div>
-        <a href='/'>Main Blog Page</a>  |  <a href='/newpost'>Add A New Blog</a>  |  <a href='/login'>LogIn</a>  |  <a href='/signup'>Sign Up</a>  |  <a href='/justblogs'>list o' blogs</a>  |  <a href='/logout'>Log Off</a>
+        <a href='/'>Main Blog Page</a>   |    |   <a href='/login'>LogIn</a>   |    |   <a href='/signup'>Sign Up</a>   |    |   <a href='/justblogs'>list o' blogs</a>
+        <hr />
+        {% if 'user' in session %}
+        <a href='/newpost'>Add A New Blog</a>   |    |   <a href='/logout'>Log Off</a> 
+        {% endif %}
         <h1>BLOGZ!</h1>
 
     </div>

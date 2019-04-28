@@ -12,10 +12,10 @@
 
     <ul>
         {% for blog in blogs %}
-
+        
             <h1><a href="/pull_blog?id={{blog.id}}">{{blog.title}}</a></h1>
             <h4>{{blog.body}}</h4>
-            Written by <a href = '/userblogs?id={{user.id}}'>{{user.username}}</a>
+            <h4>Written by <a href = '/userblogs?id={{user.id}}'>{{user.username}}</a></h4>
             <p></p>
         {% endfor %}
         <hr />
