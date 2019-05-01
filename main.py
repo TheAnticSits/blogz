@@ -47,18 +47,30 @@ class Blog(db.Model):
 @app.route('/justblogs', methods=['POST', 'GET'])
 def index():
     blogs = Blog.query.order_by(Blog.id).all()
-    users = User.query.order_by(User.username).all()
+    pair = []
+    pairs = []
+    for blog in blogs:
+        user = User.query.filter_by(id = blog.user_id).first()
+        pair = [blog, user]
+        pairs.append(pair)
+
+
+
+    #id = request.args.get('id')
+
+    
     
     #user = User.query.order_by(User.id).first()
-    return render_template('homepage.html', blogs = blogs, users = users)
+    return render_template('homepage.html', pairs = pairs)
 
 @app.route('/userblogs', methods=['POST', 'GET'])
-def useblogs():
+def userblogs():
     id = request.args.get('id')
+    #user_id = request.args.get('user_id')
     user = User.query.filter_by(id = id).first()
     #user = user.username
     blogs = Blog.query.filter_by(user_id = id).all()
-    return render_template('user_specific_blogs.html', blogs = blogs, user = user, id = id)
+    return render_template('user_specific_blogs.html', blogs = blogs, user = user)
 
 @app.route('/', methods=['POST', 'GET'])
 def userlist():
@@ -125,10 +137,10 @@ def login():
 @app.route('/pull_blog', methods=['POST', 'GET'])
 def pull_blog():
     id = request.args.get('id')
-    
+    #user_id = request.args.get('user_id')
     blog = Blog.query.filter_by(id=id).first()
-    user = User.query.filter_by(id = id).first()
-    return render_template('blog.html', title= blog.title, blog = blog.body, id = id, user = user)
+    user = User.query.filter_by(id = blog.user_id).first()
+    return render_template('blog.html', blog = blog, user = user)
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():

@@ -6,16 +6,16 @@
 <div>
     <h2>All Blogs</h2>
 </div>
-{% if blogs|length == 0 %}
+{% if pairs|length == 0 %}
 <p>No Blogs Yet</p>
 {% else %}
 
     <ul>
-        {% for blog in blogs %}
-        
-            <h1><a href="/pull_blog?id={{users.id}}">{{blog.title}}</a></h1>
-            <h4>{{blog.body}}</h4>
-            <h4>Written by <a href = '/userblogs?id={{users.id}}'>{{users.username}}</a></h4>
+        {% for pair in pairs %}
+            
+            <h1><a href="/pull_blog?id={{pair[0].user_id}}&user_id={{pair[0].user_id}}">{{pair[0].title}}</a></h1>
+            <h4>{{pair[0].body}}</h4>
+            <h4>Written by <a href = '/userblogs?id={{pair[0].user_id}}'>{{pair[1].username}}</a></h4>
             <p></p>
         {% endfor %}
         <hr />
