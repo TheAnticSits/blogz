@@ -137,7 +137,7 @@ def login():
 @app.route('/pull_blog', methods=['POST', 'GET'])
 def pull_blog():
     id = request.args.get('id')
-    #user_id = request.args.get('user_id')
+    user_id = request.args.get('user_id')
     blog = Blog.query.filter_by(id=id).first()
     user = User.query.filter_by(id = blog.user_id).first()
     return render_template('blog.html', blog = blog, user = user)

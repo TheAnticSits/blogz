@@ -13,9 +13,9 @@
     <ul>
         {% for pair in pairs %}
             
-            <h1><a href="/pull_blog?id={{pair[0].user_id}}&user_id={{pair[0].user_id}}">{{pair[0].title}}</a></h1>
+            <h1><a href="/pull_blog?id={{pair[0].id}}&user_id={{pair[0].user_id}}">{{pair[0].title}}</a></h1>
             <h4>{{pair[0].body}}</h4>
-            <h4>Written by <a href = '/userblogs?id={{pair[0].user_id}}'>{{pair[1].username}}</a></h4>
+            <h4>Written by <a href = '/userblogs?id={{pair[1].id}}'>{{pair[1].username}}</a></h4>
             <p></p>
         {% endfor %}
         <hr />
