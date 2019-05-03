@@ -37,11 +37,13 @@ class Blog(db.Model):
         self.user_id = user_id
 
 
-#@app.before_request
-#def require_login():
-#    allowed_routes = ['login', 'signup', 'user_specifit_blogs', 'homepage', 'listofusers']
-#    if request.endpoint not in allowed_routes and 'user' not in session:
-#        return redirect('/login')
+@app.before_request
+def require_login():
+    allowed_routes = ['user_specifit_blogs', 'homepage', 'listofusers', 'blog', 'login', 'signup']
+    #allowed_routes = ['/userblogs', '/blog', '/login', '/pullblog', '/signup', '/logout']
+    if request.endpoint not in allowed_routes and 'user' not in session:
+ 
+        return redirect('login')
 
 
 @app.route('/justblogs', methods=['POST', 'GET'])
@@ -80,6 +82,9 @@ def userlist():
 
 @app.route('/newpost',methods=['POST', 'GET'])
 def newpost():
+    if 'user' not in session:
+        flash('You must LOG in to BLOG in.', 'error')
+        return redirect ('/login')
     
     return render_template('newpost.html')
 
@@ -93,10 +98,10 @@ def blog():
         title = request.form['title']
         blog = request.form['blog']
         #username = session['user']
-            
+        #TODO FIX THIS USER FILTER BY AND THE USER_ID=USER.ID THING    
         user = User.query.filter_by(id = session['user']).first()
         #item = db.session.query(Parts.id).filter(name=form.name.data).one()
-            
+           
         user_id = user.id
 
         title_error = ''
@@ -173,12 +178,17 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
 
-            flash('You are a member now!  Sign in to start BLOGGING', 'alert')
-            return redirect('/login')
+            #TODO fix here
+            user = User.query.filter_by(username=username).first()
+            session['user'] = user.id
+            flash('You are a member now!  Start BLOGGING', 'alert')
+            return render_template('newpost.html')
+            
         else:
             flash('You are already set up as a user', 'error')
             return redirect('/login')
-    
+
+        
 
     return render_template('signup.html')
 
