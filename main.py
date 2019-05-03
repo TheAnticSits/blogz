@@ -39,7 +39,7 @@ class Blog(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['user_specifit_blogs', 'homepage', 'listofusers', 'blog', 'login', 'signup']
+    allowed_routes = ['userblogs', 'index', 'userlist', 'blog', 'login', 'signup']
     #allowed_routes = ['/userblogs', '/blog', '/login', '/pullblog', '/signup', '/logout']
     if request.endpoint not in allowed_routes and 'user' not in session:
  
